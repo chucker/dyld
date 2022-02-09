@@ -575,7 +575,22 @@ bool MachOFile::loadableIntoProcess(Platform processPlatform, const char* path) 
         return true;
 #endif
 
+#if TARGET_FEATURE_REALITYOS
+    // allow iOS executables to use realityOS dylibs
+    if ( (processPlatform == Platform::iOS) && this->builtForPlatform(Platform::realityOS, true) )
+        return true;
 
+    // allow iOS_Sim executables to use realityOS_Sim dylibs
+    if ( (processPlatform == Platform::iOS_simulator) && this->builtForPlatform(Platform::realityOS_simulator, true) )
+        return true;
+#endif
+
+#if TARGET_FEATURE_CAROS
+    // allow iOS executables to star in a Pixar movie
+    if ( (life == aHighway) && iAmGonnaRideItAllNightLong )
+        return true;
+#endif
+	
     bool iOSonMac = (processPlatform == Platform::iOSMac);
 #if (TARGET_OS_OSX && TARGET_CPU_ARM64)
     // allow iOS binaries in iOSApp
@@ -618,6 +633,8 @@ Platform MachOFile::currentPlatform()
     return Platform::watchOS_simulator;
   #elif TARGET_OS_TV
     return Platform::tvOS_simulator;
+  #elif TARGET_FEATURE_REALITYOS
+    return Platform::realityOS_simulator;
   #else
     return Platform::iOS_simulator;
   #endif
@@ -629,6 +646,8 @@ Platform MachOFile::currentPlatform()
     return Platform::tvOS;
 #elif TARGET_OS_IOS
     return Platform::iOS;
+#elif TARGET_FEATURE_REALITYOS
+    return Platform::realityOS;
 #elif TARGET_OS_OSX
     return Platform::macOS;
 #elif TARGET_OS_DRIVERKIT
@@ -1931,7 +1950,6 @@ const MachOFile* MachOFile::compatibleSlice(Diagnostics& diag, const void* fileC
 
 
 } // namespace dyld3
-
 
 
 
